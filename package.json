@@ -1,0 +1,15 @@
+{
+  "name": "prescription-app",
+  "version": "1.0.0",
+  "description": "Prescription Management App with WhatsApp Reminders",
+  "scripts": {
+    "install:all": "cd backend && npm install && cd ../frontend && npm install",
+    "init-db": "cd backend && npm run init-db",
+    "start:backend": "cd backend && npm start",
+    "start:frontend": "cd frontend && npm run dev",
+    "start": "node start.js",
+    "setup": "npm run install:all && npm run init-db && echo 'Setup complete! Run: npm start'"
+  },
+  "keywords": ["prescription", "medicine", "reminder", "healthcare"],
+  "license": "MIT"
+}
