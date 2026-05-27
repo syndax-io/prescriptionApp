@@ -13,6 +13,9 @@ backend/data/*.db
 frontend/dist/
 frontend/build/
 
+# Parcel cache
+frontend/.parcel-cache/
+
 # Logs
 *.log
 npm-debug.log*
