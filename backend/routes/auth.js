@@ -109,7 +109,11 @@ router.post('/login', async (req, res) => {
         name: user.name,
         role: user.role,
         phone: user.phone,
-        whatsappNumber: user.whatsapp_number
+        whatsappNumber: user.whatsapp_number,
+        license_number: user.license_number,
+        clinic_name: user.clinic_name,
+        clinic_address: user.clinic_address,
+        specialization: user.specialization
       }
     });
   } catch (error) {
@@ -123,7 +127,8 @@ router.get('/me', verifyToken, async (req, res) => {
   try {
     const user = await dbGet(`
       SELECT id, email, name, phone, whatsapp_number, role, specialization, 
-             license_number, date_of_birth, address, created_at
+             license_number, clinic_name, clinic_address, date_of_birth, address,
+             avatar_url, gender, created_at
       FROM users WHERE id = ?
     `, [req.user.id]);
 

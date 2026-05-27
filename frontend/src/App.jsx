@@ -10,12 +10,8 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import LandingPage from './pages/LandingPage'
 
-// Doctor Pages
-import DoctorDashboard from './pages/doctor/Dashboard'
-import DoctorPatients from './pages/doctor/Patients'
-import DoctorPrescriptions from './pages/doctor/Prescriptions'
-import CreatePrescription from './pages/doctor/CreatePrescription'
-import DoctorPrescriptionDetail from './pages/doctor/PrescriptionDetail'
+// Doctor Pages — new workspace replaces old pages
+import DoctorWorkspace from './pages/doctor/Workspace'
 
 // Patient Pages
 import PatientDashboard from './pages/patient/Dashboard'
@@ -32,8 +28,8 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-zinc-950">
+        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-teal-500"></div>
       </div>
     )
   }
@@ -45,19 +41,12 @@ function App() {
       <Route path="/login" element={!user ? <Login /> : <Navigate to={`/${user.role}`} />} />
       <Route path="/register" element={!user ? <Register /> : <Navigate to={`/${user.role}`} />} />
 
-      {/* Doctor Routes */}
+      {/* Doctor — full-screen workspace (no Layout wrapper) */}
       <Route path="/doctor" element={
         <ProtectedRoute allowedRoles={['doctor']}>
-          <Layout />
+          <DoctorWorkspace />
         </ProtectedRoute>
-      }>
-        <Route index element={<DoctorDashboard />} />
-        <Route path="patients" element={<DoctorPatients />} />
-        <Route path="prescriptions" element={<DoctorPrescriptions />} />
-        <Route path="prescriptions/new" element={<CreatePrescription />} />
-        <Route path="prescriptions/:id" element={<DoctorPrescriptionDetail />} />
-        <Route path="profile" element={<Profile />} />
-      </Route>
+      } />
 
       {/* Patient Routes */}
       <Route path="/patient" element={

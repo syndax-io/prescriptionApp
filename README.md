@@ -1,159 +1,126 @@
-# 💊 PrescriptionApp - Medicine Reminder System
+# PrescriptionApp
 
-A comprehensive prescription management system that connects doctors and patients. Doctors can create digital prescriptions, and patients receive timely WhatsApp reminders to take their medicines.
+A clinical prescription management system connecting doctors and patients. Doctors use a real-time workspace to diagnose, prescribe medications from a built-in formulary, and generate printable Rx slips. Patients receive email and WhatsApp reminders for their medicines.
 
-## ✨ Features
+## Features
 
-### For Doctors
-- 🩺 Create digital prescriptions with multiple medicines
-- 👥 Manage and view all patients
-- ⏰ Set medicine schedules (morning, afternoon, evening, night)
-- 📧 Automatic email notifications to patients
-- 📊 Dashboard with prescription statistics
-- 📋 View and manage all prescriptions
+### Doctor Workspace
+- Full-screen clinical desk with patient queue, vitals monitoring, and diagnosis-driven prescription authoring
+- Built-in medication formulary with keyword-based auto-suggestions (type "fever" or "infection" and matching drugs surface automatically)
+- Editable prescription lines (quantity, frequency, duration, instructions) before issuing
+- Printable Rx prescription slip generation
+- Prescription history archive with clone / re-issue support
+- Light and dark theme support
 
-### For Patients
-- 📱 Receive WhatsApp reminders for medicines
-- 📧 Email notifications for new prescriptions
-- ✅ Mark medicines as taken
-- 📊 Track daily medicine progress
-- 📋 View all prescriptions and details
-- 👤 Update profile and WhatsApp number
+### Patient Portal
+- View prescriptions and medicine details
+- Receive WhatsApp reminders at scheduled times
+- Email notifications for new prescriptions
+- Mark medicines as taken, track daily progress
 
-## 🛠️ Tech Stack
+## Tech Stack
 
-### Backend
-- **Node.js** with Express.js
-- **SQLite** database
-- **JWT** for authentication
-- **Nodemailer** for email notifications
-- **Twilio** for WhatsApp notifications
-- **node-cron** for scheduling reminders
+| Layer    | Technology |
+|----------|------------|
+| Backend  | Node.js, Express, SQLite, JWT, Nodemailer, Twilio, node-cron |
+| Frontend | React 18, Parcel, Tailwind CSS, Framer Motion, Lucide React, Axios |
 
-### Frontend
-- **React 18** with Vite
-- **TailwindCSS** for styling
-- **React Router** for navigation
-- **Axios** for API calls
-- **react-hot-toast** for notifications
-
-## 📁 Project Structure
+## Project Structure
 
 ```
-prescription-app/
+prescriptionApp/
 ├── backend/
-│   ├── config/
-│   │   └── database.js          # SQLite database configuration
-│   ├── middleware/
-│   │   └── auth.js              # JWT authentication middleware
+│   ├── config/database.js            # SQLite connection + helpers
+│   ├── middleware/auth.js            # JWT verification
 │   ├── routes/
-│   │   ├── auth.js              # Authentication routes
-│   │   ├── doctor.js            # Doctor-specific routes
-│   │   ├── patient.js           # Patient-specific routes
-│   │   └── prescription.js      # Prescription routes
+│   │   ├── auth.js                   # Register, login, profile
+│   │   ├── doctor.js                 # Patients, formulary, prescriptions
+│   │   ├── patient.js                # Patient dashboard, reminders
+│   │   └── prescription.js           # Shared prescription access
 │   ├── services/
-│   │   ├── emailService.js      # Email notification service
-│   │   ├── whatsappService.js   # WhatsApp notification service
-│   │   ├── reminderService.js   # Reminder generation service
-│   │   └── reminderScheduler.js # Cron job for sending reminders
-│   ├── scripts/
-│   │   └── initDb.js            # Database initialization script
-│   ├── .env                     # Environment variables
-│   ├── package.json
-│   └── server.js                # Express server entry point
+│   │   ├── emailService.js           # Email notifications
+│   │   ├── whatsappService.js        # WhatsApp via Twilio
+│   │   ├── reminderService.js        # Reminder generation
+│   │   └── reminderScheduler.js      # Cron scheduler
+│   ├── scripts/initDb.js            # Database schema + seed data
+│   ├── server.js                     # Express entry point
+│   └── .env                          # Environment config
 │
-└── frontend/
-    ├── src/
-    │   ├── components/
-    │   │   ├── Layout.jsx        # Main layout with sidebar
-    │   │   └── ProtectedRoute.jsx # Route protection component
-    │   ├── context/
-    │   │   └── AuthContext.jsx   # Authentication context
-    │   ├── pages/
-    │   │   ├── doctor/           # Doctor pages
-    │   │   │   ├── Dashboard.jsx
-    │   │   │   ├── Patients.jsx
-    │   │   │   ├── Prescriptions.jsx
-    │   │   │   ├── CreatePrescription.jsx
-    │   │   │   └── PrescriptionDetail.jsx
-    │   │   ├── patient/          # Patient pages
-    │   │   │   ├── Dashboard.jsx
-    │   │   │   ├── Prescriptions.jsx
-    │   │   │   ├── PrescriptionDetail.jsx
-    │   │   │   └── Reminders.jsx
-    │   │   ├── LandingPage.jsx
-    │   │   ├── Login.jsx
-    │   │   ├── Register.jsx
-    │   │   ├── Profile.jsx
-    │   │   └── NotFound.jsx
-    │   ├── services/
-    │   │   └── api.js            # Axios API configuration
-    │   ├── App.jsx               # Main app with routing
-    │   ├── main.jsx              # React entry point
-    │   └── index.css             # Tailwind CSS styles
-    ├── index.html
-    ├── package.json
-    ├── vite.config.js
-    ├── tailwind.config.js
-    └── postcss.config.js
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── doctor/               # Workspace components
+│   │   │   │   ├── PatientQueue.jsx
+│   │   │   │   ├── PrescriptionForm.jsx
+│   │   │   │   ├── SuggestionSidebar.jsx
+│   │   │   │   └── RxPrescriptionSlip.jsx
+│   │   │   ├── Layout.jsx
+│   │   │   └── ProtectedRoute.jsx
+│   │   ├── context/
+│   │   │   └── AuthContext.jsx
+│   │   ├── pages/
+│   │   │   ├── doctor/Workspace.jsx  # Main doctor workspace
+│   │   │   ├── patient/              # Patient pages
+│   │   │   ├── Login.jsx
+│   │   │   ├── Register.jsx
+│   │   │   └── LandingPage.jsx
+│   │   ├── services/api.js
+│   │   ├── App.jsx
+│   │   └── index.css
+│   ├── package.json
+│   └── tailwind.config.js
+│
+├── start.sh                          # Single-command startup (bash)
+├── start.js                          # Single-command startup (node)
+└── README.md
 ```
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
-- Node.js 18+ installed
-- npm or yarn
 
-### Quick Start (Single Command)
+- Node.js 18+
+
+### Quick Start
 
 ```bash
-# Option 1: Using Node.js script
-npm start
-
-# Option 2: Using bash script
+# Using the bash startup script
 ./start.sh
-```
 
-This will automatically:
-1. ✅ Check and install dependencies
-2. ✅ Initialize the database with sample data
-3. ✅ Start the backend server (port 5000)
-4. ✅ Start the frontend dev server (port 3000)
-
-### First Time Setup
-
-If running for the first time, you can also use:
-
-```bash
-# Install all dependencies and setup database
-npm run setup
-
-# Then start the app
+# Or using Node.js
 npm start
 ```
 
-### Manual Installation
+This will:
+1. Install backend and frontend dependencies (if missing)
+2. Initialize the database with seed data (if missing)
+3. Start the backend API server
+4. Start the frontend dev server
 
-If you prefer to run things separately:
+### Manual Setup
 
-1. **Setup Backend**
-   ```bash
-   cd backend
-   npm install
-   npm run init-db   # Initialize database
-   npm start         # Start backend server
-   ```
+```bash
+# Backend
+cd backend
+npm install
+npm run init-db
+npm start
 
-2. **Setup Frontend (in a new terminal)**
-   ```bash
-   cd frontend
-   npm install
-   npm run dev       # Start frontend server
-   ```
+# Frontend (separate terminal)
+cd frontend
+npm install
+npm run dev
+```
 
-### Access the Application
-- **Frontend:** http://localhost:3001
-- **Backend API:** http://localhost:5000/api
+### Access
+
+| Service  | URL |
+|----------|-----|
+| Frontend | http://localhost:3001 |
+| Backend API | http://localhost:9000/api |
+| API Health | http://localhost:9000/api/health |
+
+Ports are configured in `backend/.env` (PORT) and `frontend/package.json` (--port flag). The startup scripts read these dynamically.
 
 ### Demo Credentials
 
@@ -162,148 +129,100 @@ If you prefer to run things separately:
 | Doctor  | doctor@example.com  | doctor123   |
 | Patient | patient@example.com | patient123  |
 
-## ⚙️ Configuration
+Additional test patients: clara@example.com, marcus@example.com, evelyn@example.com, liam@example.com (all use password `patient123`).
+
+## Configuration
 
 ### Environment Variables
 
-Copy `.env.example` to `.env` in the backend folder and configure:
+Create or edit `backend/.env`:
 
 ```env
-# Server Configuration
-PORT=5000
-NODE_ENV=development
+PORT=9000
+JWT_SECRET=your-secret-key
 
-# JWT Secret (change in production!)
-JWT_SECRET=your-super-secret-jwt-key
-
-# Email Configuration (Gmail example)
+# Email (Gmail example)
 EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
 EMAIL_USER=your-email@gmail.com
 EMAIL_PASS=your-app-specific-password
 EMAIL_FROM=PrescriptionApp <your-email@gmail.com>
 
-# Twilio WhatsApp Configuration
-TWILIO_ACCOUNT_SID=your-twilio-account-sid
-TWILIO_AUTH_TOKEN=your-twilio-auth-token
+# WhatsApp via Twilio
+TWILIO_ACCOUNT_SID=your-account-sid
+TWILIO_AUTH_TOKEN=your-auth-token
 TWILIO_WHATSAPP_NUMBER=whatsapp:+14155238886
 ```
 
-### Setting up WhatsApp Notifications
+### WhatsApp Setup
 
-1. Create a Twilio account at https://www.twilio.com
-2. Enable WhatsApp Sandbox in Twilio Console
-3. Add your Twilio credentials to `.env`
-4. Patients need to opt-in to the WhatsApp sandbox by sending a message
-5. Update patient WhatsApp numbers in their profiles
+1. Create a Twilio account at twilio.com
+2. Enable the WhatsApp Sandbox in the Twilio Console
+3. Add credentials to `backend/.env`
+4. Patients opt in by sending the sandbox join message
 
-### Setting up Email Notifications
+### Email Setup
 
-1. For Gmail, enable 2-Factor Authentication
+1. Enable 2FA on your Gmail account
 2. Generate an App-Specific Password
-3. Add email credentials to `.env`
+3. Add the credentials to `backend/.env`
 
-## 📱 How It Works
-
-### Creating a Prescription (Doctor)
-
-1. Doctor logs in
-2. Goes to "New Prescription"
-3. Selects a patient
-4. Adds diagnosis and notes
-5. Adds medicines with:
-   - Medicine name and dosage
-   - Schedule (morning, afternoon, evening, night)
-   - Time for each slot
-   - Before/after meal instructions
-   - Duration in days
-6. Submits the prescription
-7. Patient receives an email with prescription details
-8. Reminders are automatically generated
-
-### Receiving Reminders (Patient)
-
-1. Patient receives email notification about new prescription
-2. At scheduled times, patient receives WhatsApp messages
-3. Patient can log in to the app to:
-   - View prescription details
-   - See today's schedule
-   - Mark medicines as taken
-   - Track progress
-
-## 🔐 API Endpoints
+## API Reference
 
 ### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - User login
-- `GET /api/auth/me` - Get current user
-- `PUT /api/auth/profile` - Update profile
-- `PUT /api/auth/change-password` - Change password
 
-### Doctor Routes
-- `GET /api/doctor/dashboard` - Dashboard stats
-- `GET /api/doctor/patients` - List all patients
-- `GET /api/doctor/patients/search` - Search patients
-- `GET /api/doctor/prescriptions` - List prescriptions
-- `POST /api/doctor/prescriptions` - Create prescription
-- `GET /api/doctor/prescriptions/:id` - Get prescription
-- `PATCH /api/doctor/prescriptions/:id/status` - Update status
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | /api/auth/register | Register new user |
+| POST | /api/auth/login | Login |
+| GET  | /api/auth/me | Current user profile |
+| PUT  | /api/auth/profile | Update profile |
+| PUT  | /api/auth/change-password | Change password |
 
-### Patient Routes
-- `GET /api/patient/dashboard` - Dashboard data
-- `GET /api/patient/prescriptions` - List prescriptions
-- `GET /api/patient/prescriptions/:id` - Get prescription
-- `GET /api/patient/reminders/today` - Today's reminders
-- `GET /api/patient/reminders/upcoming` - Upcoming reminders
-- `POST /api/patient/reminders/:id/acknowledge` - Mark as taken
-- `PUT /api/patient/whatsapp` - Update WhatsApp number
+### Doctor
 
-## 📦 Database Schema
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET  | /api/doctor/dashboard | Dashboard statistics |
+| GET  | /api/doctor/patients | All patients with vitals |
+| GET  | /api/doctor/patients/search | Search patients |
+| GET  | /api/doctor/formulary | Medication catalog |
+| GET  | /api/doctor/prescriptions | Prescription history |
+| POST | /api/doctor/prescriptions | Issue new prescription |
+| GET  | /api/doctor/prescriptions/:id | Single prescription |
+| PATCH | /api/doctor/prescriptions/:id/status | Update status |
+
+### Patient
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET  | /api/patient/dashboard | Dashboard data |
+| GET  | /api/patient/prescriptions | Prescription list |
+| GET  | /api/patient/prescriptions/:id | Prescription detail |
+| GET  | /api/patient/reminders/today | Today's reminders |
+| GET  | /api/patient/reminders/upcoming | Upcoming reminders |
+| POST | /api/patient/reminders/:id/acknowledge | Mark as taken |
+| PUT  | /api/patient/whatsapp | Update WhatsApp number |
+
+## Database Schema
 
 ### Users
-- id, email, password, name, phone, whatsapp_number, role
-- Doctor: specialization, license_number
-- Patient: date_of_birth, address
+Fields: id, email, password, name, phone, whatsapp_number, role, gender, avatar_url.
+Doctor-specific: specialization, license_number, clinic_name, clinic_address.
+Patient-specific: date_of_birth, address, weight, bp, heart_rate, spo2, temperature, condition, visit_reason.
+
+### Medications Formulary
+Fields: id, name, type, strength, default_quantity, default_duration, default_frequency, default_instructions, category, indications.
 
 ### Prescriptions
-- id, doctor_id, patient_id, diagnosis, notes
-- start_date, end_date, status
+Fields: id, prescription_code, doctor_id, patient_id, diagnosis, notes, general_notes, follow_up, start_date, end_date, status.
 
 ### Medicines
-- id, prescription_id, name, dosage, frequency
-- morning, afternoon, evening, night (with times)
-- duration_days, instructions, before_meal
+Fields: id, prescription_id, formulary_id, name, type, strength, quantity, frequency, duration, instructions, timing flags (morning/afternoon/evening/night with times), before_meal.
 
 ### Reminders
-- id, medicine_id, patient_id, scheduled_time
-- sent, sent_at, acknowledged, acknowledged_at
+Fields: id, medicine_id, patient_id, scheduled_time, sent, acknowledged, timestamps.
 
-## 🎨 Screenshots
+## License
 
-The app includes:
-- Modern, responsive landing page
-- Clean login/register forms
-- Doctor dashboard with stats
-- Patient dashboard with medicine tracker
-- Prescription creation with medicine schedule
-- Interactive reminder checklist
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is open source and available under the MIT License.
-
-## 💬 Support
-
-For support, please open an issue in the GitHub repository.
-
----
-
-Made with ❤️ for better healthcare
+MIT
