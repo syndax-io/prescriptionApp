@@ -72,7 +72,7 @@ function startBackend() {
     
     const backend = spawn('node', ['server.js'], {
       cwd: backendDir,
-      env: { ...process.env, PORT: '5000' }
+      env: { ...process.env }
     });
     
     backend.stdout.on('data', (data) => {
@@ -156,7 +156,7 @@ ${colors.bright}${colors.green}════════════════�
 ════════════════════════════════════════════════════════════${colors.reset}
 
   ${colors.cyan}Frontend:${colors.reset}  http://localhost:3001
-  ${colors.cyan}Backend:${colors.reset}   http://localhost:5000/api
+  ${colors.cyan}Backend:${colors.reset}   http://localhost:9000/api
 
   ${colors.yellow}Demo Credentials:${colors.reset}
   ┌─────────────────────────────────────────────────┐
