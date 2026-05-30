@@ -39,8 +39,8 @@ cleanup() {
     fi
     
     # Kill any remaining processes on ports
-    lsof -ti:5000 | xargs kill -9 2>/dev/null || true
-    lsof -ti:3000 | xargs kill -9 2>/dev/null || true
+    lsof -ti:9000 | xargs kill -9 2>/dev/null || true
+    lsof -ti:3001 | xargs kill -9 2>/dev/null || true
     
     echo -e "${GREEN}[SUCCESS]${NC} Servers stopped. Goodbye!"
     exit 0
@@ -96,7 +96,7 @@ if ! kill -0 $BACKEND_PID 2>/dev/null; then
     echo -e "${RED}[ERROR]${NC} Backend failed to start"
     exit 1
 fi
-echo -e "${GREEN}[SUCCESS]${NC} Backend running on port 5000"
+echo -e "${GREEN}[SUCCESS]${NC} Backend running on port 9000"
 
 # Start frontend server
 echo -e "${BLUE}[INFO]${NC} Starting frontend dev server..."
@@ -112,7 +112,7 @@ echo "  🚀 Application is ready!"
 echo -e "════════════════════════════════════════════════════════════${NC}"
 echo ""
 echo -e "  ${CYAN}Frontend:${NC}  http://localhost:3001"
-echo -e "  ${CYAN}Backend:${NC}   http://localhost:5000/api"
+echo -e "  ${CYAN}Backend:${NC}   http://localhost:9000/api"
 echo ""
 echo -e "  ${YELLOW}Demo Credentials:${NC}"
 echo "  ┌─────────────────────────────────────────────────┐"

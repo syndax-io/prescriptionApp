@@ -18,14 +18,34 @@ const { startReminderScheduler } = require('./services/reminderScheduler');
 // Initialize express app
 const app = express();
 
+// Log all incoming API requests (very helpful to debug container/proxy issues)
+app.use('/api', (req, res, next) => {
+  console.log(`[API] ${req.method} ${req.originalUrl} | Origin: ${req.headers.origin || 'none'} | User-Agent: ${req.headers['user-agent']?.slice(0,60) || 'n/a'}`);
+  next();
+});
+
+// Explicit OPTIONS preflight handler - MUST be early.
+// Some reverse proxies, container port-forwarders, nginx, Traefik, etc.
+// return 501/405 for OPTIONS before the request ever reaches normal routes.
+// This guarantees browsers can complete CORS preflight for login etc.
+app.options('*', (req, res) => {
+  const origin = req.headers.origin || '*';
+  res.header('Access-Control-Allow-Origin', origin);
+  res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Max-Age', '86400'); // 24 hours
+  return res.status(204).end();
+});
+
 // Middleware - Allow CORS from any localhost port for development
 app.use(cors({
   origin: function(origin, callback) {
     // Allow requests with no origin (mobile apps, curl, etc.)
     if (!origin) return callback(null, true);
     
-    // Allow any localhost origin
-    if (origin.match(/^http:\/\/localhost(:\d+)?$/)) {
+    // Allow any localhost origin (including 127.0.0.1 which some browsers use)
+    if (origin.match(/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/)) {
       return callback(null, true);
     }
     

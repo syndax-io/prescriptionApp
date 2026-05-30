@@ -1,7 +1,8 @@
 import axios from 'axios'
 
-// Use environment variable or default to localhost
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api'
+// Use environment variable or default to localhost:9000 (for separate frontend/backend dev or port-forwarded containers).
+// For reverse-proxy setups (nginx/caddy in front serving both frontend + /api → backend) set REACT_APP_API_URL=/api
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:9000/api'
 
 const api = axios.create({
   baseURL: API_BASE_URL,
