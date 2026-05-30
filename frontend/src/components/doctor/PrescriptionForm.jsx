@@ -48,8 +48,6 @@ export default function PrescriptionForm({
   onUpdateFollowUp,
   onOpenSidebar,
   onGeneratePrescription,
-  activeInputFocus,
-  setActiveInputFocus,
 }) {
   /* ── line helpers ─────────────────────────────────── */
 
@@ -201,38 +199,51 @@ export default function PrescriptionForm({
           </label>
           <textarea
             rows={2}
-            placeholder="Type diagnosis — medicine sidebar opens automatically…"
+            placeholder="Enter diagnosis (e.g. Acute bronchitis, Hypertension)…"
             value={diagnosis}
-            onChange={(e) => {
-              onUpdateDiagnosis(e.target.value);
-              if (e.target.value.length > 0 && !activeInputFocus) {
-                setActiveInputFocus(true);
-                onOpenSidebar();
-              }
-            }}
+            onChange={(e) => onUpdateDiagnosis(e.target.value)}
             className="w-full rounded-lg bg-slate-50 dark:bg-zinc-850 border border-slate-200 dark:border-zinc-750 text-sm text-slate-800 dark:text-zinc-200 placeholder-slate-400 dark:placeholder-zinc-550 px-4 py-3 focus:outline-none focus:ring-1 focus:ring-teal-500/40 dark:focus:ring-teal-350/40 focus:border-teal-500/40 dark:focus:border-teal-350/40 resize-none transition"
           />
         </section>
 
         {/* ── Medications list ───────────────────────── */}
         <section>
-          <label className="flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-zinc-400 uppercase tracking-wider mb-3">
-            <Pill size={14} className="text-teal-500 dark:text-teal-350" />
-            Medications
-            {hasMedicines && (
-              <span className="ml-1 bg-teal-50 dark:bg-teal-950 text-teal-600 dark:text-teal-350 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-                {prescriptionLines.length}
-              </span>
-            )}
-          </label>
+          <div className="flex items-center mb-3">
+            <label className="flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-zinc-400 uppercase tracking-wider">
+              <Pill size={14} className="text-teal-500 dark:text-teal-350" />
+              Medications
+              {hasMedicines && (
+                <span className="ml-1 bg-teal-50 dark:bg-teal-950 text-teal-600 dark:text-teal-350 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                  {prescriptionLines.length}
+                </span>
+              )}
+            </label>
+
+            <button
+              type="button"
+              onClick={onOpenSidebar}
+              className="ml-auto flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-lg border border-teal-200 dark:border-teal-800/60 bg-teal-50 dark:bg-teal-500/10 text-teal-600 dark:text-teal-350 hover:bg-teal-100 dark:hover:bg-teal-500/20 hover:border-teal-300 dark:hover:border-teal-700 transition-colors"
+            >
+              <Sparkles size={13} />
+              Browse suggestions
+            </button>
+          </div>
 
           {!hasMedicines ? (
             <div className="rounded-xl border border-dashed border-slate-300 dark:border-zinc-750 bg-slate-50 dark:bg-zinc-850/50 py-8 flex flex-col items-center text-slate-400 dark:text-zinc-550 text-sm">
               <Pill size={24} className="mb-2 opacity-40" />
               <p>No medicines added yet</p>
-              <p className="text-xs mt-1">
-                Use the sidebar to search &amp; add medications
+              <p className="text-xs mt-1 mb-3">
+                Open the suggestions panel to browse the formulary
               </p>
+              <button
+                type="button"
+                onClick={onOpenSidebar}
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl bg-teal-500 hover:bg-teal-600 active:bg-teal-700 text-white dark:text-zinc-950 shadow-sm transition"
+              >
+                <Sparkles size={15} />
+                Open Medicine Suggestions
+              </button>
             </div>
           ) : (
             <div className="space-y-3">

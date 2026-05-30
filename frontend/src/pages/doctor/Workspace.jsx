@@ -33,7 +33,6 @@ export default function DoctorWorkspace() {
   // UI state
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [isSlipOpen, setIsSlipOpen] = useState(false)
-  const [activeInputFocus, setActiveInputFocus] = useState(false)
   const [activeViewTab, setActiveViewTab] = useState('prescribe')
   const [loadingData, setLoadingData] = useState(true)
 
@@ -143,7 +142,6 @@ export default function DoctorWorkspace() {
       setCurrentDate(new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }))
     }
     setIsSidebarOpen(false)
-    setActiveInputFocus(false)
   }, [selectedPatient])
 
   // Persist draft on change
@@ -329,8 +327,6 @@ export default function DoctorWorkspace() {
               onUpdateFollowUp={setFollowUp}
               onOpenSidebar={() => setIsSidebarOpen(true)}
               onGeneratePrescription={handleIssueSubmit}
-              activeInputFocus={activeInputFocus}
-              setActiveInputFocus={setActiveInputFocus}
             />
           ) : (
             /* History View */
