@@ -6,15 +6,9 @@ node_modules/
 .env.local
 .env.*.local
 
-# Database
-backend/data/*.db
-
-# Build outputs
-frontend/dist/
-frontend/build/
-
-# Parcel cache
-frontend/.parcel-cache/
+# Frontend and backend live in their own repositories.
+frontend/
+backend/
 
 # Logs
 *.log
