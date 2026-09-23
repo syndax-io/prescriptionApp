@@ -12,11 +12,8 @@ A clinical prescription management system connecting doctors and patients. Docto
 - Prescription history archive with clone / re-issue support
 - Light and dark theme support
 
-### Patient Portal
-- View prescriptions and medicine details
-- Receive WhatsApp reminders at scheduled times
-- Email notifications for new prescriptions
-- Mark medicines as taken, track daily progress
+### Patient charts
+Patients do not sign in. The physician opens a chart from the queue and sees problems, allergies, current medicines, recent labs, and an editable clinical note.
 
 ## Tech Stack
 
@@ -126,10 +123,9 @@ Ports are configured in `backend/.env` (PORT) and `frontend/package.json` (--por
 
 | Role    | Email               | Password    |
 |---------|---------------------|-------------|
-| Doctor  | doctor@example.com  | doctor123   |
-| Patient | patient@example.com | patient123  |
+| Physician | doctor@example.com | doctor123 |
 
-Additional test patients: clara@example.com, marcus@example.com, evelyn@example.com, liam@example.com (all use password `patient123`).
+Patients are charts on the physician queue. They do not have accounts.
 
 ## Configuration
 

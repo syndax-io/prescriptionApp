@@ -163,8 +163,7 @@ ${colors.bright}${colors.green}════════════════�
 
   ${colors.yellow}Demo Credentials:${colors.reset}
   ┌─────────────────────────────────────────────────┐
-  │  Doctor:  doctor@example.com  / doctor123      │
-  │  Patient: patient@example.com / patient123     │
+  │  Physician: doctor@example.com / doctor123     │
   └─────────────────────────────────────────────────┘
 
   ${colors.bright}Press Ctrl+C to stop all servers${colors.reset}
