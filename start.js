@@ -39,12 +39,15 @@ const dbPath = path.join(backendDir, "data", "prescription_app.db");
 async function checkDependencies() {
   log.info("Checking dependencies...");
 
-  const backendModules = path.join(backendDir, "node_modules");
+  const backendVenv = path.join(backendDir, ".venv");
   const frontendModules = path.join(frontendDir, "node_modules");
 
-  if (!fs.existsSync(backendModules)) {
-    log.warn("Backend dependencies not installed. Installing...");
-    execSync("npm install", { cwd: backendDir, stdio: "inherit" });
+  if (!fs.existsSync(backendVenv)) {
+    log.warn("Backend virtualenv not found. Installing Python dependencies...");
+    execSync("python3 -m venv .venv && .venv/bin/pip install -r requirements.txt", {
+      cwd: backendDir,
+      stdio: "inherit",
+    });
     log.success("Backend dependencies installed");
   }
 
@@ -62,7 +65,7 @@ async function initDatabase() {
 
   if (!fs.existsSync(dbPath)) {
     log.warn("Database not found. Initializing...");
-    execSync("npm run init-db", { cwd: backendDir, stdio: "inherit" });
+    execSync(".venv/bin/python -m scripts.init_db", { cwd: backendDir, stdio: "inherit" });
     log.success("Database initialized with sample data");
   } else {
     log.success("Database already exists");
@@ -73,10 +76,14 @@ function startBackend() {
   return new Promise((resolve) => {
     log.info("Starting backend server...");
 
-    const backend = spawn("node", ["server.js"], {
-      cwd: backendDir,
-      env: { ...process.env, PORT: "9000" },
-    });
+    const backend = spawn(
+      path.join(backendDir, ".venv", "bin", "python"),
+      ["-m", "uvicorn", "app.main:app", "--host", "127.0.0.1", "--port", "9000", "--log-level", "warning"],
+      {
+        cwd: backendDir,
+        env: { ...process.env, PORT: "9000" },
+      }
+    );
 
     backend.stdout.on("data", (data) => {
       const lines = data.toString().trim().split("\n");

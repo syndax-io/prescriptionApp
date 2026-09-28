@@ -60,9 +60,9 @@ echo -e "${NC}"
 
 # Check and install backend dependencies
 echo -e "${BLUE}[INFO]${NC} Checking backend dependencies..."
-if [ ! -d "$BACKEND_DIR/node_modules" ]; then
+if [ ! -d "$BACKEND_DIR/.venv" ]; then
     echo -e "${YELLOW}[WARN]${NC} Installing backend dependencies..."
-    cd "$BACKEND_DIR" && npm install
+    cd "$BACKEND_DIR" && python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 fi
 echo -e "${GREEN}[SUCCESS]${NC} Backend dependencies ready"
 
@@ -78,7 +78,7 @@ echo -e "${GREEN}[SUCCESS]${NC} Frontend dependencies ready"
 echo -e "${BLUE}[INFO]${NC} Checking database..."
 if [ ! -f "$DB_PATH" ]; then
     echo -e "${YELLOW}[WARN]${NC} Database not found. Initializing..."
-    cd "$BACKEND_DIR" && npm run init-db
+    cd "$BACKEND_DIR" && .venv/bin/python -m scripts.init_db
     echo -e "${GREEN}[SUCCESS]${NC} Database initialized with sample data"
 else
     echo -e "${GREEN}[SUCCESS]${NC} Database already exists"
@@ -87,7 +87,7 @@ fi
 # Start backend server
 echo -e "${BLUE}[INFO]${NC} Starting backend server..."
 cd "$BACKEND_DIR"
-node server.js &
+PORT=9000 .venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 9000 --log-level warning &
 BACKEND_PID=$!
 sleep 2
 

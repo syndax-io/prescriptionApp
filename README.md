@@ -19,7 +19,7 @@ Patients do not sign in. The physician opens a chart from the queue and sees pro
 
 | Layer    | Technology |
 |----------|------------|
-| Backend  | Node.js, Express, SQLite, JWT, Nodemailer, Twilio, node-cron |
+| Backend  | Python, FastAPI, Pydantic, SQLite, JWT |
 | Frontend | React 18, Parcel, Tailwind CSS, Framer Motion, Lucide React, Axios |
 
 ## Project Structure
@@ -27,20 +27,9 @@ Patients do not sign in. The physician opens a chart from the queue and sees pro
 ```
 prescriptionApp/
 ├── backend/
-│   ├── config/database.js            # SQLite connection + helpers
-│   ├── middleware/auth.js            # JWT verification
-│   ├── routes/
-│   │   ├── auth.js                   # Register, login, profile
-│   │   ├── doctor.js                 # Patients, formulary, prescriptions
-│   │   ├── patient.js                # Patient dashboard, reminders
-│   │   └── prescription.js           # Shared prescription access
-│   ├── services/
-│   │   ├── emailService.js           # Email notifications
-│   │   ├── whatsappService.js        # WhatsApp via Twilio
-│   │   ├── reminderService.js        # Reminder generation
-│   │   └── reminderScheduler.js      # Cron scheduler
-│   ├── scripts/initDb.js            # Database schema + seed data
-│   ├── server.js                     # Express entry point
+│   ├── app/                          # FastAPI app, routers, Pydantic models
+│   ├── scripts/init_db.py            # Schema and demo seed
+│   ├── requirements.txt
 │   └── .env                          # Environment config
 │
 ├── frontend/
@@ -76,7 +65,8 @@ prescriptionApp/
 
 ### Prerequisites
 
-- Node.js 18+
+- Python 3.11+
+- Node.js 18+ for the frontend
 
 ### Quick Start
 
@@ -99,9 +89,10 @@ This will:
 ```bash
 # Backend
 cd backend
-npm install
-npm run init-db
-npm start
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+.venv/bin/python -m scripts.init_db
+.venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 9000
 
 # Frontend (separate terminal)
 cd frontend
@@ -135,7 +126,7 @@ Create or edit `backend/.env`:
 
 ```env
 PORT=9000
-JWT_SECRET=your-secret-key
+JWT_SECRET=your-super-secret-jwt-key-change-in-production
 
 # Email (Gmail example)
 EMAIL_HOST=smtp.gmail.com
