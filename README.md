@@ -1,215 +1,155 @@
 # PrescriptionApp
 
-A clinical prescription management system connecting doctors and patients. Doctors use a real-time workspace to diagnose, prescribe medications from a built-in formulary, and generate printable Rx slips. Patients receive email and WhatsApp reminders for their medicines.
+Vanguard Clinical Desk is an outpatient workspace for a physician. It sits beside the hospital record: the doctor opens an assigned chart, sees the problems, allergies, current medicines, and recent labs, and writes today's prescription. Patients do not sign in.
 
-## Features
+## What the desk does
 
-### Doctor Workspace
-- Full-screen clinical desk with patient queue, vitals monitoring, and diagnosis-driven prescription authoring
-- Built-in medication formulary with keyword-based auto-suggestions (type "fever" or "infection" and matching drugs surface automatically)
-- Editable prescription lines (quantity, frequency, duration, instructions) before issuing
-- Printable Rx prescription slip generation
-- Prescription history archive with clone / re-issue support
-- Light and dark theme support
+- Queue of open encounters assigned to the signed-in physician, with blood pressure and temperature
+- Chart summary: problems, current medicines, and recent labs, plus vitals on the consult header
+- **Continue** copies a current medicine onto today's slip with its recorded dose and frequency
+- Symptom note with formulary suggestions after a short pause. In-stock medicines are listed before the rest
+- Allergy hard stop. Amoxicillin and co-amoxiclav cannot be added or issued when the chart records a penicillin allergy. The reason names the reaction
+- A medicine the patient already takes is not offered as a new course
+- Adult formulary doses are refused for a patient under 18
+- Possible causes, when the model answers, show a title and a rationale. They are not written into the diagnosis, and model links are not shown as citations
+- If the model is unavailable, the desk says so and still lists formulary matches
+- Printable slip with MRN, allergies, generic name, strength, frequency, and duration
+- Prescription history with same-day revisions
+- Standalone reception desk for registering an arrival and assigning a doctor. In hospital ERP mode that desk is hidden
 
-### Patient charts
-Patients do not sign in. The physician opens a chart from the queue and sees problems, allergies, current medicines, recent labs, and an editable clinical note.
+## Demo charts
 
-## Tech Stack
+The seed is an English UAE general-medicine clinic, Al Noor Outpatient Clinic in Dubai. Re-seed after pulling this change. An existing database file is left as it is.
 
-| Layer    | Technology |
-|----------|------------|
-| Backend  | Python, FastAPI, Pydantic, SQLite, JWT |
-| Frontend | React 18, Parcel, Tailwind CSS, Framer Motion, Lucide React, Axios |
+| Patient | What to show |
+| --- | --- |
+| Layla Al Hashimi | Fever and sore throat, penicillin rash, WBC 12.4. Azithromycin can be added. Amoxicillin is refused. |
+| Fatima Al Mansoori | Diabetes review, HbA1c 7.8%, already on metformin and omeprazole. Continue both. |
+| Omar Al Nuaimi | Hypertension follow-up, already on amlodipine |
+| Hassan Al Maktoum | Adult allergic asthma, already on a salbutamol inhaler |
+| Yusuf Rahman | Infected hand laceration, no drug allergy |
 
-## Project Structure
+## Tech stack
 
-```
-prescriptionApp/
-├── backend/
-│   ├── app/                          # FastAPI app, routers, Pydantic models
-│   ├── scripts/init_db.py            # Schema and demo seed
-│   ├── requirements.txt
-│   └── .env                          # Environment config
-│
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── doctor/               # Workspace components
-│   │   │   │   ├── PatientQueue.jsx
-│   │   │   │   ├── PrescriptionForm.jsx
-│   │   │   │   ├── SuggestionSidebar.jsx
-│   │   │   │   └── RxPrescriptionSlip.jsx
-│   │   │   ├── Layout.jsx
-│   │   │   └── ProtectedRoute.jsx
-│   │   ├── context/
-│   │   │   └── AuthContext.jsx
-│   │   ├── pages/
-│   │   │   ├── doctor/Workspace.jsx  # Main doctor workspace
-│   │   │   ├── patient/              # Patient pages
-│   │   │   ├── Login.jsx
-│   │   │   ├── Register.jsx
-│   │   │   └── LandingPage.jsx
-│   │   ├── services/api.js
-│   │   ├── App.jsx
-│   │   └── index.css
-│   ├── package.json
-│   └── tailwind.config.js
-│
-├── start.sh                          # Single-command startup (bash)
-├── start.js                          # Single-command startup (node)
-└── README.md
-```
+| Layer | Technology |
+| --- | --- |
+| Backend | Python, FastAPI, Pydantic, SQLite, MongoDB, JWT |
+| Frontend | React 18, Parcel, Tailwind CSS |
 
-## Getting Started
+SQLite holds users, the queue, the formulary, and issued prescriptions. MongoDB holds the disease history: problems, allergies, current medicines, labs, and visit notes. The API database file is `backend/data/prescription_app.db`.
+
+## Getting started
 
 ### Prerequisites
 
 - Python 3.11+
-- Node.js 18+ for the frontend
+- Node.js 18+
+- MongoDB on `localhost:27017`. `./start.sh` and `npm start` start it with Docker Compose when it is down. Without Docker, run `docker compose -f backend/docker-compose.yml up -d` yourself first.
 
-### Quick Start
+### Quick start
 
 ```bash
-# Using the bash startup script
 ./start.sh
+```
 
-# Or using Node.js
+Or:
+
+```bash
 npm start
 ```
 
-This will:
-1. Install backend and frontend dependencies (if missing)
-2. Initialize the database with seed data (if missing)
-3. Start the backend API server
-4. Start the frontend dev server
+Both free anything still listening on ports 9000 and 3001, install missing dependencies, start MongoDB if needed, seed the database when the SQLite file is missing, and start the API on port 9000 and the frontend on port 3001.
 
-### Manual Setup
+To load the UAE demo charts into an existing database, rebuild from `backend/`:
 
 ```bash
-# Backend
+.venv/bin/python -m scripts.init_db
+```
+
+That deletes the SQLite file and the Mongo `disease_histories` collection, then seeds again.
+
+### Manual setup
+
+```bash
+docker compose -f backend/docker-compose.yml up -d
+
 cd backend
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 .venv/bin/python -m scripts.init_db
 .venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 9000
 
-# Frontend (separate terminal)
-cd frontend
+cd ../frontend
 npm install
 npm run dev
 ```
 
 ### Access
 
-| Service  | URL |
-|----------|-----|
+| Service | URL |
+| --- | --- |
 | Frontend | http://localhost:3001 |
 | Backend API | http://localhost:9000/api |
-| API Health | http://localhost:9000/api/health |
+| API health | http://localhost:9000/api/health |
 
-Ports are configured in `backend/.env` (PORT) and `frontend/package.json` (--port flag). The startup scripts read these dynamically.
+### Demo credentials
 
-### Demo Credentials
-
-| Role    | Email               | Password    |
-|---------|---------------------|-------------|
+| Role | Email | Password |
+| --- | --- | --- |
 | Physician | doctor@example.com | doctor123 |
+| Reception | reception@example.com | doctor123 |
 
-Patients are charts on the physician queue. They do not have accounts.
+The login page fills these in. A physician lands on `/workspace`. Reception lands on `/reception` unless the API is in ERP mode.
 
 ## Configuration
 
-### Environment Variables
+`backend/.env` and `backend/.env.local` are loaded by the API. `JWT_SECRET` must be at least 32 bytes. `MONGODB_URI` defaults to `mongodb://localhost:27017`. `GEMINI_API_KEY` stays on the server. Without it, possible causes are marked unavailable and medicines still come from the formulary. The browser never calls the model directly. A suggestion call includes this patient's chart: date of birth, age, sex, weight, vitals, problems, allergies, current medicines, dated visits and their notes, labs, confirmed document facts, and recent slips. Name and MRN stay in the database.
 
-Create or edit `backend/.env`:
+`CLINIC_TIMEZONE` defaults to `Asia/Dubai` for same-day prescription revisions.
 
-```env
-PORT=9000
-JWT_SECRET=your-super-secret-jwt-key-change-in-production
+A single-origin tunnel, for a forwarded port, is `npm run start:tunnel`. It serves the Python API and the frontend through port 8080.
 
-# Email (Gmail example)
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_USER=your-email@gmail.com
-EMAIL_PASS=your-app-specific-password
-EMAIL_FROM=PrescriptionApp <your-email@gmail.com>
-
-# WhatsApp via Twilio
-TWILIO_ACCOUNT_SID=your-account-sid
-TWILIO_AUTH_TOKEN=your-auth-token
-TWILIO_WHATSAPP_NUMBER=whatsapp:+14155238886
-```
-
-### WhatsApp Setup
-
-1. Create a Twilio account at twilio.com
-2. Enable the WhatsApp Sandbox in the Twilio Console
-3. Add credentials to `backend/.env`
-4. Patients opt in by sending the sandbox join message
-
-### Email Setup
-
-1. Enable 2FA on your Gmail account
-2. Generate an App-Specific Password
-3. Add the credentials to `backend/.env`
-
-## API Reference
+## API
 
 ### Authentication
 
 | Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /api/auth/register | Register new user |
-| POST | /api/auth/login | Login |
-| GET  | /api/auth/me | Current user profile |
-| PUT  | /api/auth/profile | Update profile |
-| PUT  | /api/auth/change-password | Change password |
+| --- | --- | --- |
+| POST | /api/auth/login | Sign in |
+| GET | /api/auth/me | Current profile |
+| PUT | /api/auth/profile | Update profile |
+| PUT | /api/auth/change-password | Change password |
 
-### Doctor
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET  | /api/doctor/dashboard | Dashboard statistics |
-| GET  | /api/doctor/patients | All patients with vitals |
-| GET  | /api/doctor/patients/search | Search patients |
-| GET  | /api/doctor/formulary | Medication catalog |
-| GET  | /api/doctor/prescriptions | Prescription history |
-| POST | /api/doctor/prescriptions | Issue new prescription |
-| GET  | /api/doctor/prescriptions/:id | Single prescription |
-| PATCH | /api/doctor/prescriptions/:id/status | Update status |
-
-### Patient
+### Physician
 
 | Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET  | /api/patient/dashboard | Dashboard data |
-| GET  | /api/patient/prescriptions | Prescription list |
-| GET  | /api/patient/prescriptions/:id | Prescription detail |
-| GET  | /api/patient/reminders/today | Today's reminders |
-| GET  | /api/patient/reminders/upcoming | Upcoming reminders |
-| POST | /api/patient/reminders/:id/acknowledge | Mark as taken |
-| PUT  | /api/patient/whatsapp | Update WhatsApp number |
+| --- | --- | --- |
+| GET | /api/doctor/patients | Assigned open encounters |
+| GET | /api/doctor/patients/:id | Chart, allergies, medicines, labs, open note |
+| PUT | /api/doctor/encounters/:id | Save the visit note |
+| POST | /api/doctor/encounters/:id/suggestions | Formulary matches and possible causes, using this patient's chart |
+| GET | /api/doctor/formulary | Medication catalog |
+| POST | /api/doctor/prescriptions | Issue a slip. Allergy and child-dose conflicts return 409 |
+| GET | /api/doctor/prescriptions | History, three at a time |
+| GET | /api/doctor/prescriptions/:id | One prescription for this physician, read by id |
 
-## Database Schema
+### Reception
 
-### Users
-Fields: id, email, password, name, phone, whatsapp_number, role, gender, avatar_url.
-Doctor-specific: specialization, license_number, clinic_name, clinic_address.
-Patient-specific: date_of_birth, address, weight, bp, heart_rate, spo2, temperature, condition, visit_reason.
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| GET | /api/reception/doctors | Physicians who can be assigned |
+| GET | /api/reception/arrivals | Today's arrivals |
+| POST | /api/reception/arrivals | Register an arrival |
 
-### Medications Formulary
-Fields: id, name, type, strength, default_quantity, default_duration, default_frequency, default_instructions, category, indications.
+## Tests
 
-### Prescriptions
-Fields: id, prescription_code, doctor_id, patient_id, diagnosis, notes, general_notes, follow_up, start_date, end_date, status.
+```bash
+cd backend && .venv/bin/python -m pytest tests/test_api.py
+cd frontend && npm test
+```
 
-### Medicines
-Fields: id, prescription_id, formulary_id, name, type, strength, quantity, frequency, duration, instructions, timing flags (morning/afternoon/evening/night with times), before_meal.
+Frontend visual snapshots:
 
-### Reminders
-Fields: id, medicine_id, patient_id, scheduled_time, sent, acknowledged, timestamps.
-
-## License
-
-MIT
+```bash
+cd frontend && npm run test:visual
+```

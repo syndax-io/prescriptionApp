@@ -27,6 +27,7 @@ FRONTEND_PID=""
 
 # Cleanup function
 cleanup() {
+    local status=$?
     echo ""
     echo -e "${BLUE}[INFO]${NC} Shutting down servers..."
     
@@ -43,7 +44,7 @@ cleanup() {
     lsof -ti:3001 | xargs kill -9 2>/dev/null || true
     
     echo -e "${GREEN}[SUCCESS]${NC} Servers stopped. Goodbye!"
-    exit 0
+    exit "$status"
 }
 
 # Set up trap for cleanup
@@ -53,7 +54,7 @@ trap cleanup SIGINT SIGTERM EXIT
 echo -e "${BOLD}${BLUE}"
 echo "╔══════════════════════════════════════════════════════════╗"
 echo "║                                                          ║"
-echo "║   💊 PrescriptionApp - Medicine Reminder System          ║"
+echo "║   PrescriptionApp — Vanguard Clinical Desk               ║"
 echo "║                                                          ║"
 echo "╚══════════════════════════════════════════════════════════╝"
 echo -e "${NC}"
@@ -74,6 +75,38 @@ if [ ! -d "$FRONTEND_DIR/node_modules" ]; then
 fi
 echo -e "${GREEN}[SUCCESS]${NC} Frontend dependencies ready"
 
+# The chart, allergies, and suggestions all read Mongo. Do not boot the API without it.
+mongo_up() {
+    python3 -c 'import socket; socket.create_connection(("127.0.0.1", 27017), 1).close()' >/dev/null 2>&1
+}
+
+echo -e "${BLUE}[INFO]${NC} Checking MongoDB..."
+if mongo_up; then
+    echo -e "${GREEN}[SUCCESS]${NC} MongoDB is accepting connections on port 27017"
+else
+    if ! command -v docker >/dev/null 2>&1; then
+        echo -e "${RED}[ERROR]${NC} MongoDB is not running on localhost:27017."
+        echo "Start it with: docker compose -f backend/docker-compose.yml up -d"
+        exit 1
+    fi
+    echo -e "${YELLOW}[WARN]${NC} Starting MongoDB with Docker Compose..."
+    docker compose -f "$BACKEND_DIR/docker-compose.yml" --project-directory "$BACKEND_DIR" up -d
+    ready=0
+    for _ in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30; do
+        if mongo_up; then
+            ready=1
+            break
+        fi
+        sleep 1
+    done
+    if [ "$ready" -ne 1 ]; then
+        echo -e "${RED}[ERROR]${NC} MongoDB did not accept connections on localhost:27017."
+        echo "Start it with: docker compose -f backend/docker-compose.yml up -d"
+        exit 1
+    fi
+    echo -e "${GREEN}[SUCCESS]${NC} MongoDB is accepting connections on port 27017"
+fi
+
 # Initialize database if needed
 echo -e "${BLUE}[INFO]${NC} Checking database..."
 if [ ! -f "$DB_PATH" ]; then
@@ -83,6 +116,29 @@ if [ ! -f "$DB_PATH" ]; then
 else
     echo -e "${GREEN}[SUCCESS]${NC} Database already exists"
 fi
+
+# A previous dev server may still own these ports. Release them before binding again.
+free_port() {
+    local port="$1"
+    local pids
+    pids="$(lsof -nP -tiTCP:"$port" -sTCP:LISTEN 2>/dev/null || true)"
+    if [ -z "$pids" ]; then
+        echo -e "${BLUE}[INFO]${NC} Port ${port} is free"
+        return 0
+    fi
+    echo -e "${YELLOW}[WARN]${NC} Stopping process on port ${port}: $(echo "$pids" | tr '\n' ' ')"
+    # shellcheck disable=SC2086
+    kill -9 $pids 2>/dev/null || true
+    local still
+    still="$(lsof -nP -tiTCP:"$port" -sTCP:LISTEN 2>/dev/null || true)"
+    if [ -n "$still" ]; then
+        echo -e "${RED}[ERROR]${NC} Port ${port} is still in use"
+        exit 1
+    fi
+}
+
+free_port 9000
+free_port 3001
 
 # Start backend server
 echo -e "${BLUE}[INFO]${NC} Starting backend server..."

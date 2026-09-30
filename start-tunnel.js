@@ -35,7 +35,8 @@ console.log('🚀 Starting PrescriptionApp in single-origin tunnel mode...\n');
 function startBackend() {
   return new Promise((resolve) => {
     console.log('[1/3] Starting backend on :9000 ...');
-    const be = spawn('node', ['server.js'], {
+    const python = path.join(backendDir, '.venv', 'bin', 'python');
+    const be = spawn(python, ['-m', 'uvicorn', 'app.main:app', '--host', '127.0.0.1', '--port', String(BACKEND_PORT)], {
       cwd: backendDir,
       env: { ...process.env, PORT: String(BACKEND_PORT) },
       stdio: ['ignore', 'pipe', 'pipe']

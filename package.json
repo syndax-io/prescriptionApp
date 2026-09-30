@@ -1,16 +1,16 @@
 {
   "name": "prescription-app",
   "version": "1.0.0",
-  "description": "Prescription Management App with WhatsApp Reminders",
+  "description": "Physician clinical desk for outpatient prescribing",
   "scripts": {
-    "install:all": "cd backend && npm install && cd ../frontend && npm install",
-    "init-db": "cd backend && npm run init-db",
-    "start:backend": "cd backend && npm start",
+    "install:all": "cd backend && python3 -m venv .venv && .venv/bin/pip install -r requirements.txt && cd ../frontend && npm install",
+    "init-db": "cd backend && .venv/bin/python -m scripts.init_db",
+    "start:backend": "cd backend && .venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 9000",
     "start:frontend": "cd frontend && npm run dev",
     "start": "node start.js",
     "start:tunnel": "node start-tunnel.js",
     "setup": "npm run install:all && npm run init-db && echo 'Setup complete! Run: npm start'"
   },
-  "keywords": ["prescription", "medicine", "reminder", "healthcare"],
+  "keywords": ["prescription", "clinical-desk", "healthcare"],
   "license": "MIT"
 }
